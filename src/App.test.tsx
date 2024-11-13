@@ -1,9 +1,23 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+
+test('renders React Project Issues header', async () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  await waitFor(() => {
+    const headerElement = screen.getByText(/React Issues/i);
+    expect(headerElement).toBeInTheDocument();
+  });
+});
+
+// Mock the global fetch function
+global.fetch = jest.fn();
+
+test('displays an error message when fetch fails', async () => {
+  (fetch as jest.Mock).mockRejectedValueOnce(new Error('Fetch failed'));
+  render(<App />);
+  await waitFor(() => {
+    expect(screen.getByText(/Error fetching issues: Fetch failed/i)).toBeInTheDocument();
+  });
 });
